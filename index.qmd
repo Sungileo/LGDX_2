@@ -1,0 +1,19 @@
+---
+title: <span> </span>
+listing: 
+  type: default
+  grid-columns: 4
+  contents: posts
+  sort: "date desc"
+  categories: false
+  sort-ui: false
+  filter-ui: false
+  image-placeholder: "https://placehold.jp/30/dd6699/ffffff/300x150.png?text=placeholder+image"
+---
+
+
+
+<img class="slider" src="https://cdn.imweb.me/upload/S2024042221b9fa192007d/8be94d2cdf2cb.png">
+
+
+

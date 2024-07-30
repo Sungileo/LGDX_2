@@ -1,0 +1,26 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: <img src="https://cdn.imweb.me/thumbnail/20240422/007568c9f6705.png" alt="LG EDX Title" class="title_img">
+
+  navbar:
+    pinned: true
+    right:
+
+      - href: about.qmd
+        text: About Me
+      - href: "https://dxschool.co.kr/"
+        text: 공식 홈페이지
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: false
+
+    
+
+editor: visual
+

@@ -1,0 +1,31 @@
+/* css styles */
+
+
+.navbar{
+  background: #210000;
+}
+
+#quarto-header>nav {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 13vw;
+  padding-right: 13vw;
+}
+
+.title_img{
+  width: 350px; /* 원하는 너비로 설정 */
+  height: auto;
+}
+
+.menu-text{
+  color: white;
+  transition: color 0.1s linear;
+  font-size: 30px;
+  font-style: Bold;
+  margin-left: 10px;
+}
+
+.menu-text:hover{
+  color: #a50034;
+}
+
