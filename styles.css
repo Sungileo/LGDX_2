@@ -6,8 +6,8 @@
 }
 
 #quarto-header>nav {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   padding-left: 13vw;
   padding-right: 13vw;
 }
@@ -20,7 +20,7 @@
 .menu-text{
   color: white;
   transition: color 0.1s linear;
-  font-size: 30px;
+  font-size: 20px;
   font-style: Bold;
   margin-left: 10px;
 }

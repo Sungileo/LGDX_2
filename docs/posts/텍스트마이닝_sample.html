@@ -8,6 +8,7 @@
 
 <meta name="author" content="작성자 이름">
 <meta name="dcterms.date" content="2024-07-30">
+<meta name="description" content="텍스트마이닝을 해보아요">
 
 <title> - 텍스트마이닝</title>
 <style>
@@ -102,7 +103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -138,7 +139,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#텍스트마이닝" id="toc-텍스트마이닝" class="nav-link active" data-scroll-target="#텍스트마이닝">텍스트마이닝</a>
+  <ul class="collapse">
+  <li><a href="#텍스트-데이터의-전처리" id="toc-텍스트-데이터의-전처리" class="nav-link" data-scroll-target="#텍스트-데이터의-전처리">1. 텍스트 데이터의 전처리</a>
+  <ul class="collapse">
+  <li><a href="#토큰화tokenize" id="toc-토큰화tokenize" class="nav-link" data-scroll-target="#토큰화tokenize">1-1. 토큰화(Tokenize)</a></li>
+  <li><a href="#텍스트-전처리-정규표현식과-텍스트-필터링" id="toc-텍스트-전처리-정규표현식과-텍스트-필터링" class="nav-link" data-scroll-target="#텍스트-전처리-정규표현식과-텍스트-필터링">1-2. 텍스트 전처리 (정규표현식과 텍스트 필터링)</a></li>
+  <li><a href="#텍스트-전처리-형태소-단위-분리" id="toc-텍스트-전처리-형태소-단위-분리" class="nav-link" data-scroll-target="#텍스트-전처리-형태소-단위-분리">1-3. 텍스트 전처리 (형태소 단위 분리)</a></li>
+  </ul></li>
+  <li><a href="#텍스트-데이터-변환" id="toc-텍스트-데이터-변환" class="nav-link" data-scroll-target="#텍스트-데이터-변환">2. 텍스트 데이터 변환</a>
+  <ul class="collapse">
+  <li><a href="#bow-bag-of-words" id="toc-bow-bag-of-words" class="nav-link" data-scroll-target="#bow-bag-of-words">2-1. BOW (Bag-of-Words)</a></li>
+  <li><a href="#tf-idf-term-frequency-inverse-document-frequency" id="toc-tf-idf-term-frequency-inverse-document-frequency" class="nav-link" data-scroll-target="#tf-idf-term-frequency-inverse-document-frequency">2-2. TF-IDF (Term Frequency-Inverse Document Frequency)</a></li>
+  <li><a href="#sentencetransformer" id="toc-sentencetransformer" class="nav-link" data-scroll-target="#sentencetransformer">2-3. SentenceTransformer</a></li>
+  </ul></li>
+  <li><a href="#모델-적용-분류-classification" id="toc-모델-적용-분류-classification" class="nav-link" data-scroll-target="#모델-적용-분류-classification">3. 모델 적용 (분류, Classification)</a>
+  <ul class="collapse">
+  <li><a href="#데이터-변환-적용" id="toc-데이터-변환-적용" class="nav-link" data-scroll-target="#데이터-변환-적용">3-1. 데이터 변환 적용</a></li>
+  <li><a href="#모델-적용-로지스틱-회귀-분석" id="toc-모델-적용-로지스틱-회귀-분석" class="nav-link" data-scroll-target="#모델-적용-로지스틱-회귀-분석">3-2. 모델 적용 (로지스틱 회귀 분석)</a></li>
+  </ul></li>
+  <li><a href="#성능-지표-해석" id="toc-성능-지표-해석" class="nav-link" data-scroll-target="#성능-지표-해석">4. 성능 지표 해석</a></li>
+  <li><a href="#파이프라인-하이퍼파라미터-튜닝" id="toc-파이프라인-하이퍼파라미터-튜닝" class="nav-link" data-scroll-target="#파이프라인-하이퍼파라미터-튜닝">5. 파이프라인 &amp; 하이퍼파라미터 튜닝</a>
+  <ul class="collapse">
+  <li><a href="#파이프라인" id="toc-파이프라인" class="nav-link" data-scroll-target="#파이프라인">5-1. 파이프라인</a></li>
+  <li><a href="#하이퍼파라미터-튜닝" id="toc-하이퍼파라미터-튜닝" class="nav-link" data-scroll-target="#하이퍼파라미터-튜닝">5-2. 하이퍼파라미터 튜닝</a></li>
+  </ul></li>
+  <li><a href="#결과" id="toc-결과" class="nav-link" data-scroll-target="#결과">6. 결과</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -147,6 +182,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1 class="title">텍스트마이닝</h1>
 </div>
 
+<div>
+  <div class="description">
+    텍스트마이닝을 해보아요
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -995,7 +1035,7 @@ weighted avg       0.58      0.57      0.57      1000
 <h2 class="anchored" data-anchor-id="성능-지표-해석">4. 성능 지표 해석</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="텍스트마이닝_sample_files/figure-html/e309aa67-1-image-2.png" class="img-fluid figure-img"></p>
+<p><img src="data/classification_report.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">image-2.png</figcaption>
 </figure>
 </div>
@@ -1057,7 +1097,7 @@ weighted avg       0.58      0.57      0.57      1000
 <p>성능이 좋아지지만, 시간이 오래 걸린디.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="텍스트마이닝_sample_files/figure-html/8bfe74ce-1-image.png" class="img-fluid figure-img"></p>
+<p><img src="data/cross_validation.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">image.png</figcaption>
 </figure>
 </div>
