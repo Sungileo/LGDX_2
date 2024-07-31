@@ -1,6 +1,0 @@
----
-title: "Hello World!"
-author: "Sungil Park"
-date: "2024-07-23"
-description: "test content page"
----

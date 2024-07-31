@@ -3,10 +3,6 @@
     "listing": "/index.html",
     "items": [
       "/posts/텍스트마이닝_sample.html",
-      "/posts/01_ex.html",
-      "/posts/04_ex.html",
-      "/posts/03_ex.html",
-      "/posts/02_ex.html",
       "/posts/ezik_logistic_regression.html"
     ]
   }

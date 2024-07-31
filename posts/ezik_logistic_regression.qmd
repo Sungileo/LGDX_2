@@ -4,6 +4,7 @@ author: "Sungil Park"
 date: "2024-07-19"
 description: 로지스틱 회귀를 해보아요 
 toc: true
+image: "data/ezik.png"
 ---
 
 이거는 R코드에용~
