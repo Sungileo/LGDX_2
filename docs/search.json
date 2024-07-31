@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": " ",
     "section": "",
-    "text": "텍스트마이닝\n\n\n\n\n\n텍스트마이닝을 해보아요\n\n\n\n\n\n\nJul 30, 2024\n\n\n박성일\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\nNo matching items"
+    "text": "텍스트마이닝\n\n\n\n\n\n텍스트마이닝을 해보아요\n\n\n\n\n\n\nJul 30, 2024\n\n\n박성일\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\nHello World!\n\n\n\n\n\ntest content page\n\n\n\n\n\n\nJul 23, 2024\n\n\nSungil Park\n\n\n\n\n\n\n  \n\n\n\n\n이직 여부 로지스틱 회귀분석\n\n\n\n\n\n로지스틱 회귀를 해보아요\n\n\n\n\n\n\nJul 19, 2024\n\n\nSungil Park\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -61,5 +61,19 @@
     "title": "텍스트마이닝",
     "section": "",
     "text": "어떤 단어가 분류에 가중치를 많이 주었는지 분류 모델을 통해 시각화 해보았다.\n10 * 358 (혐오대상, 단어)의 가중치 행렬이다.\n\nweight = best_model.steps[1][1].coef_\nweight.shape\n\n(10, 358)\n\n\n혐오 대상별 단어 시각화 함수\n\nimport matplotlib\nimport matplotlib.pyplot as plt\nimport matplotlib.font_manager as fm\nimport squarify\n\ndef plot_x(x):\n    vocab = best_model.steps[0][1].vocabulary_\n    weight = best_model.steps[1][1].coef_\n    df = pd.DataFrame([vocab.keys(), vocab.values()]).T\n    df.sort_values(by=1, inplace=True)\n\n    df[\"W\"] = weight[x]\n    df.columns = ['단어', \"인덱스\", \"가중치\"]\n    df.set_index('인덱스', inplace=True)\n\n    print(df.sort_values('가중치', ascending=False).head())\n    fontpath = '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'\n    font_name = fm.FontProperties(fname=fontpath, size=10).get_name()\n    plt.rc('font', family=font_name)\n\n    plt.rcParams['figure.figsize'] = (10,10)\n    plt.rcParams['font.size'] = 15\n\n    sizes = df.sort_values(by='가중치', ascending=False).head(30)['가중치']\n    labels= df.sort_values(by='가중치', ascending=False).head(30)['단어']\n\n    norm = matplotlib.colors.Normalize(vmin=min(sizes),vmax=max(sizes))\n    colors = [matplotlib.cm.Reds(norm(value)) for value in sizes]\n\n    squarify.plot(sizes, 10, 10, label=labels, color=colors,bar_kwargs=dict(linewidth=8, edgecolor=\"#eee\"))\n    plt.title(\"혐오에 활용되는 주요 키워드\")\n    plt.axis('off')\n    plt.show()\n\n\nfor i,j in enumerate(train.loc[:, \"여성/가족\":\"clean\"].columns):\n    print(f\"인덱스[{i}] : {j}\")\n\n인덱스[0] : 여성/가족\n인덱스[1] : 남성\n인덱스[2] : 성소수자\n인덱스[3] : 인종/국적\n인덱스[4] : 연령\n인덱스[5] : 지역\n인덱스[6] : 종교\n인덱스[7] : 기타 혐오\n인덱스[8] : 악플/욕설\n인덱스[9] : clean\n\n\n\n\n\nplot_x(0)\n\n     단어       가중치\n인덱스              \n347  한남  6.890850\n281  자지  3.586034\n93   댕이  3.065344\n69   냄져  3.052125\n253  이기  2.174341\n\n\n\n\n\n\n\n\n\nplot_x(1)\n\n     단어       가중치\n인덱스              \n347  한남  6.890850\n281  자지  3.586034\n93   댕이  3.065344\n69   냄져  3.052125\n253  이기  2.174341\n\n\n\n\n\n\n\n\n\nplot_x(2)\n\n       단어       가중치\n인덱스                \n100   동성애  4.647741\n101  동성애자  3.780582\n23     게이  3.533253\n58     꼬충  3.243192\n110    똥꼬  2.903039\n\n\n\n\n\n\n\n\n\nplot_x(3)\n\n      단어       가중치\n인덱스               \n309  조선족  3.923741\n316   중국  3.445646\n84   다문화  3.265852\n65    난민  2.721175\n333  탈북자  2.499918\n\n\n\n\n\n\n\n\n\nplot_x(4)\n\n      단어       가중치\n인덱스               \n50    급식  4.551949\n64    나이  1.496709\n169   새끼  1.333710\n236  올라오  1.199835\n204   안되  1.141374\n\n\n\n\n\n\n\n\n\nplot_x(5)\n\n      단어       가중치\n인덱스               \n293  전라도  4.621232\n355   홍어  4.062138\n193   쌍도  3.432531\n90    대구  2.994224\n26   경상도  2.916873\n\n\n\n\n\n\n\n\n\nplot_x(6)\n\n     단어       가중치\n인덱스              \n19   개독  3.961684\n127  목사  3.946740\n186  슬람  3.435409\n312  종교  3.332901\n31   교회  2.903494\n\n\n\n\n\n\n\n\n\nplot_x(7)\n\n      단어       가중치\n인덱스               \n159  빨갱이  2.602123\n325   차별  1.430154\n231   역시  1.243613\n184   수준  1.189651\n49   금지법  1.188665\n\n\n\n\n\n\n\n\n\nplot_x(8)\n\n     단어       가중치\n인덱스              \n195  씨받  1.576897\n297  정권  1.286304\n319  지랄  1.248540\n15   가지  1.229520\n188  시발  1.163751\n\n\n\n\n\n\n\n\n\nplot_x(9)\n\n      단어       가중치\n인덱스               \n10   ㅂ니다  1.375340\n244   원래  1.253776\n71    네요  1.123729\n137   미국  1.089941\n146   범죄  0.916220"
+  },
+  {
+    "objectID": "posts/ezik_logistic_regression.html",
+    "href": "posts/ezik_logistic_regression.html",
+    "title": "이직 여부 로지스틱 회귀분석",
+    "section": "",
+    "text": "이거는 R코드에용~"
+  },
+  {
+    "objectID": "posts/ezik_logistic_regression.html#더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다.",
+    "href": "posts/ezik_logistic_regression.html#더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다.",
+    "title": "이직 여부 로지스틱 회귀분석",
+    "section": "더 정확한 결과를 위해 이상치 제거,다중공선성 제거등의 방법이 필요하다.",
+    "text": "더 정확한 결과를 위해 이상치 제거,다중공선성 제거등의 방법이 필요하다."
   }
 ]

@@ -1,0 +1,132 @@
+---
+title: "이직  여부 로지스틱 회귀분석"
+author: "Sungil Park"
+date: "2024-07-19"
+description: 로지스틱 회귀를 해보아요 
+toc: true
+---
+
+이거는 R코드에용~
+
+# 데이터 불러오기
+
+```{r}
+library(dplyr)
+df <- read.csv("data/job_transfer.csv")
+df <- df %>% na.omit()
+```
+
+# 데이터 구조 확인
+
+```{r}
+str(df)
+summary(df)
+```
+
+
+
+
+
+# 전처리
+
+- 범주형데이터, 이직여부를 `factor`형식으로 변환
+
+- 동일 값 가지는 컬럼 삭제 `EmployeeCount`
+
+```{r}
+df <- data.frame(lapply(df, function(x) if(is.character(x)) as.factor(x) else x))
+df$Attrition <- as.factor(df$Attrition)
+
+remove_single_value_cols <- function(data) {
+  single_value_cols <- sapply(data, function(x) length(unique(x)) == 1)
+  data[, !single_value_cols]
+}
+
+df <- remove_single_value_cols(df)
+```
+
+
+# 수치형 변수의 상관관계
+
+```{r}
+library(corrplot)
+numeric_df <- df[, sapply(df, is.numeric)]
+data_cor <- cor(numeric_df)
+corrplot(data_cor, method = "color", type = "upper", 
+         tl.col = "black", tl.srt = 45, tl.cex = 0.55,
+         col = colorRampPalette(c("#6D9EC1", "white", "#E46726"))(200))
+
+```
+
+
+# 로지스틱 회귀 분석
+
+```{r}
+model <- glm(Attrition ~ ., data = df, family = "binomial")
+summary(model)
+```
+
+# 유의하지 않은 변수 삭제
+
+- stepwise function을 사용해서 AIC계수가 작아지도록
+
+```{r}
+step_model <- step(model, direction = "both")
+summary(step_model)
+```
+```{r}
+coef_df <- data.frame(
+  Variable = names(step_model$coefficients),
+  Coefficient = step_model$coefficients,
+  row.names = NULL
+) %>%
+  mutate(Coefficient_Abs = abs(Coefficient)) %>%
+  arrange(desc(Coefficient_Abs))
+
+coef_df
+```
+
+
+
+# 해석
+
+통계적으로 가장 유의미한 변수들 (p < 0.001):
+
+- OverTimeYes: 초과 근무를 하는 직원은 이직할 확률이 매우 높아진다.
+- NumCompaniesWorked: 이전에 일한 회사의 수가 많을수록 이직 가능성이 높아진다.
+- JobSatisfaction: 직무 만족도가 높을수록 이직 가능성이 낮아진다.
+- EnvironmentSatisfaction: 근무 환경 만족도가 높을수록 이직 가능성이 낮아진다.
+- BusinessTravelTravel_Frequently: 잦은 출장이 있는 직원은 이직 가능성이 높아진다.
+- YearsInCurrentRole: 현재 역할에서의 근속 연수가 길수록 이직 가능성이 낮아진다.
+- YearsSinceLastPromotion: 마지막 승진 이후 시간이 오래될수록 이직 가능성이 높아진다.
+
+
+다른 중요한 요인들:
+
+- DistanceFromHome: 집에서 직장까지의 거리가 멀수록 이직 가능성이 높아진다.
+- JobInvolvement: 직무 참여도가 높을수록 이직 가능성이 낮아진다.
+- MaritalStatusSingle: 미혼자가 기혼자나 이혼/사별자보다 이직 가능성이 높다.
+- WorkLifeBalance: 일-생활 균형이 좋을수록 이직 가능성이 낮아진다.
+
+
+직무 관련 요인:
+
+- 특정 직무(예: Sales Representative, Laboratory Technician, Human Resources)는 다른 직무에 비해 이직 가능성이 높다. <br>반면, Research Director 직무는 이직 가능성이 낮은 편입니다.
+
+
+기타 관찰:
+
+- GenderMale: 남성이 여성보다 이직 가능성이 약간 높습니다.
+- TrainingTimesLastYear: 지난 해 교육을 많이 받을수록 이직 가능성이 낮아집니다.
+- YearsAtCompany: 회사 근속 연수가 길수록 이직 가능성이 약간 높아지는데, 이는 YearsInCurrentRole과 함께 고려해야 합니다.
+
+## 더 정확한 결과를 위해 `이상치 제거`,`다중공선성 제거`등의 방법이 필요하다.
+
+
+
+
+
+
+
+
+

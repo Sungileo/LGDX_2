@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sungil Park">
+<meta name="dcterms.date" content="2024-07-19">
+<meta name="description" content="로지스틱 회귀를 해보아요">
+
+<title> - 이직 여부 로지스틱 회귀분석</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title"><img src="https://cdn.imweb.me/thumbnail/20240422/007568c9f6705.png" alt="LG EDX Title" class="title_img"></span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html" rel="" target="">
+ <span class="menu-text">About Me</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://dxschool.co.kr/" rel="" target="">
+ <span class="menu-text">공식 홈페이지</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#데이터-불러오기" id="toc-데이터-불러오기" class="nav-link active" data-scroll-target="#데이터-불러오기">데이터 불러오기</a></li>
+  <li><a href="#데이터-구조-확인" id="toc-데이터-구조-확인" class="nav-link" data-scroll-target="#데이터-구조-확인">데이터 구조 확인</a></li>
+  <li><a href="#전처리" id="toc-전처리" class="nav-link" data-scroll-target="#전처리">전처리</a></li>
+  <li><a href="#수치형-변수의-상관관계" id="toc-수치형-변수의-상관관계" class="nav-link" data-scroll-target="#수치형-변수의-상관관계">수치형 변수의 상관관계</a></li>
+  <li><a href="#로지스틱-회귀-분석" id="toc-로지스틱-회귀-분석" class="nav-link" data-scroll-target="#로지스틱-회귀-분석">로지스틱 회귀 분석</a></li>
+  <li><a href="#유의하지-않은-변수-삭제" id="toc-유의하지-않은-변수-삭제" class="nav-link" data-scroll-target="#유의하지-않은-변수-삭제">유의하지 않은 변수 삭제</a></li>
+  <li><a href="#해석" id="toc-해석" class="nav-link" data-scroll-target="#해석">해석</a>
+  <ul class="collapse">
+  <li><a href="#더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다." id="toc-더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다." class="nav-link" data-scroll-target="#더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다.">더 정확한 결과를 위해 <code>이상치 제거</code>,<code>다중공선성 제거</code>등의 방법이 필요하다.</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">이직 여부 로지스틱 회귀분석</h1>
+</div>
+
+<div>
+  <div class="description">
+    로지스틱 회귀를 해보아요
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sungil Park </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 19, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>이거는 R코드에용~</p>
+<section id="데이터-불러오기" class="level1">
+<h1>데이터 불러오기</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+다음의 패키지를 부착합니다: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/job_transfer.csv"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="데이터-구조-확인" class="level1">
+<h1>데이터 구조 확인</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   1470 obs. of  35 variables:
+ $ Age                     : int  41 49 37 33 27 32 59 30 38 36 ...
+ $ Attrition               : chr  "Yes" "No" "Yes" "No" ...
+ $ BusinessTravel          : chr  "Travel_Rarely" "Travel_Frequently" "Travel_Rarely" "Travel_Frequently" ...
+ $ DailyRate               : int  1102 279 1373 1392 591 1005 1324 1358 216 1299 ...
+ $ Department              : chr  "Sales" "Research &amp; Development" "Research &amp; Development" "Research &amp; Development" ...
+ $ DistanceFromHome        : int  1 8 2 3 2 2 3 24 23 27 ...
+ $ Education               : int  2 1 2 4 1 2 3 1 3 3 ...
+ $ EducationField          : chr  "Life Sciences" "Life Sciences" "Other" "Life Sciences" ...
+ $ EmployeeCount           : int  1 1 1 1 1 1 1 1 1 1 ...
+ $ EmployeeNumber          : int  1 2 4 5 7 8 10 11 12 13 ...
+ $ EnvironmentSatisfaction : int  2 3 4 4 1 4 3 4 4 3 ...
+ $ Gender                  : chr  "Female" "Male" "Male" "Female" ...
+ $ HourlyRate              : int  94 61 92 56 40 79 81 67 44 94 ...
+ $ JobInvolvement          : int  3 2 2 3 3 3 4 3 2 3 ...
+ $ JobLevel                : int  2 2 1 1 1 1 1 1 3 2 ...
+ $ JobRole                 : chr  "Sales Executive" "Research Scientist" "Laboratory Technician" "Research Scientist" ...
+ $ JobSatisfaction         : int  4 2 3 3 2 4 1 3 3 3 ...
+ $ MaritalStatus           : chr  "Single" "Married" "Single" "Married" ...
+ $ MonthlyIncome           : int  5993 5130 2090 2909 3468 3068 2670 2693 9526 5237 ...
+ $ MonthlyRate             : int  19479 24907 2396 23159 16632 11864 9964 13335 8787 16577 ...
+ $ NumCompaniesWorked      : int  8 1 6 1 9 0 4 1 0 6 ...
+ $ Over18                  : chr  "Y" "Y" "Y" "Y" ...
+ $ OverTime                : chr  "Yes" "No" "Yes" "Yes" ...
+ $ PercentSalaryHike       : int  11 23 15 11 12 13 20 22 21 13 ...
+ $ PerformanceRating       : int  3 4 3 3 3 3 4 4 4 3 ...
+ $ RelationshipSatisfaction: int  1 4 2 3 4 3 1 2 2 2 ...
+ $ StandardHours           : int  80 80 80 80 80 80 80 80 80 80 ...
+ $ StockOptionLevel        : int  0 1 0 0 1 0 3 1 0 2 ...
+ $ TotalWorkingYears       : int  8 10 7 8 6 8 12 1 10 17 ...
+ $ TrainingTimesLastYear   : int  0 3 3 3 3 2 3 2 2 3 ...
+ $ WorkLifeBalance         : int  1 3 3 3 3 2 2 3 3 2 ...
+ $ YearsAtCompany          : int  6 10 0 8 2 7 1 1 9 7 ...
+ $ YearsInCurrentRole      : int  4 7 0 7 2 7 0 0 7 7 ...
+ $ YearsSinceLastPromotion : int  0 1 0 3 2 3 0 0 1 7 ...
+ $ YearsWithCurrManager    : int  5 7 0 0 2 6 0 0 8 7 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Age         Attrition         BusinessTravel       DailyRate     
+ Min.   :18.00   Length:1470        Length:1470        Min.   : 102.0  
+ 1st Qu.:30.00   Class :character   Class :character   1st Qu.: 465.0  
+ Median :36.00   Mode  :character   Mode  :character   Median : 802.0  
+ Mean   :36.92                                         Mean   : 802.5  
+ 3rd Qu.:43.00                                         3rd Qu.:1157.0  
+ Max.   :60.00                                         Max.   :1499.0  
+  Department        DistanceFromHome   Education     EducationField    
+ Length:1470        Min.   : 1.000   Min.   :1.000   Length:1470       
+ Class :character   1st Qu.: 2.000   1st Qu.:2.000   Class :character  
+ Mode  :character   Median : 7.000   Median :3.000   Mode  :character  
+                    Mean   : 9.193   Mean   :2.913                     
+                    3rd Qu.:14.000   3rd Qu.:4.000                     
+                    Max.   :29.000   Max.   :5.000                     
+ EmployeeCount EmployeeNumber   EnvironmentSatisfaction    Gender         
+ Min.   :1     Min.   :   1.0   Min.   :1.000           Length:1470       
+ 1st Qu.:1     1st Qu.: 491.2   1st Qu.:2.000           Class :character  
+ Median :1     Median :1020.5   Median :3.000           Mode  :character  
+ Mean   :1     Mean   :1024.9   Mean   :2.722                             
+ 3rd Qu.:1     3rd Qu.:1555.8   3rd Qu.:4.000                             
+ Max.   :1     Max.   :2068.0   Max.   :4.000                             
+   HourlyRate     JobInvolvement    JobLevel       JobRole         
+ Min.   : 30.00   Min.   :1.00   Min.   :1.000   Length:1470       
+ 1st Qu.: 48.00   1st Qu.:2.00   1st Qu.:1.000   Class :character  
+ Median : 66.00   Median :3.00   Median :2.000   Mode  :character  
+ Mean   : 65.89   Mean   :2.73   Mean   :2.064                     
+ 3rd Qu.: 83.75   3rd Qu.:3.00   3rd Qu.:3.000                     
+ Max.   :100.00   Max.   :4.00   Max.   :5.000                     
+ JobSatisfaction MaritalStatus      MonthlyIncome    MonthlyRate   
+ Min.   :1.000   Length:1470        Min.   : 1009   Min.   : 2094  
+ 1st Qu.:2.000   Class :character   1st Qu.: 2911   1st Qu.: 8047  
+ Median :3.000   Mode  :character   Median : 4919   Median :14236  
+ Mean   :2.729                      Mean   : 6503   Mean   :14313  
+ 3rd Qu.:4.000                      3rd Qu.: 8379   3rd Qu.:20462  
+ Max.   :4.000                      Max.   :19999   Max.   :26999  
+ NumCompaniesWorked    Over18            OverTime         PercentSalaryHike
+ Min.   :0.000      Length:1470        Length:1470        Min.   :11.00    
+ 1st Qu.:1.000      Class :character   Class :character   1st Qu.:12.00    
+ Median :2.000      Mode  :character   Mode  :character   Median :14.00    
+ Mean   :2.693                                            Mean   :15.21    
+ 3rd Qu.:4.000                                            3rd Qu.:18.00    
+ Max.   :9.000                                            Max.   :25.00    
+ PerformanceRating RelationshipSatisfaction StandardHours StockOptionLevel
+ Min.   :3.000     Min.   :1.000            Min.   :80    Min.   :0.0000  
+ 1st Qu.:3.000     1st Qu.:2.000            1st Qu.:80    1st Qu.:0.0000  
+ Median :3.000     Median :3.000            Median :80    Median :1.0000  
+ Mean   :3.154     Mean   :2.712            Mean   :80    Mean   :0.7939  
+ 3rd Qu.:3.000     3rd Qu.:4.000            3rd Qu.:80    3rd Qu.:1.0000  
+ Max.   :4.000     Max.   :4.000            Max.   :80    Max.   :3.0000  
+ TotalWorkingYears TrainingTimesLastYear WorkLifeBalance YearsAtCompany  
+ Min.   : 0.00     Min.   :0.000         Min.   :1.000   Min.   : 0.000  
+ 1st Qu.: 6.00     1st Qu.:2.000         1st Qu.:2.000   1st Qu.: 3.000  
+ Median :10.00     Median :3.000         Median :3.000   Median : 5.000  
+ Mean   :11.28     Mean   :2.799         Mean   :2.761   Mean   : 7.008  
+ 3rd Qu.:15.00     3rd Qu.:3.000         3rd Qu.:3.000   3rd Qu.: 9.000  
+ Max.   :40.00     Max.   :6.000         Max.   :4.000   Max.   :40.000  
+ YearsInCurrentRole YearsSinceLastPromotion YearsWithCurrManager
+ Min.   : 0.000     Min.   : 0.000          Min.   : 0.000      
+ 1st Qu.: 2.000     1st Qu.: 0.000          1st Qu.: 2.000      
+ Median : 3.000     Median : 1.000          Median : 3.000      
+ Mean   : 4.229     Mean   : 2.188          Mean   : 4.123      
+ 3rd Qu.: 7.000     3rd Qu.: 3.000          3rd Qu.: 7.000      
+ Max.   :18.000     Max.   :15.000          Max.   :17.000      </code></pre>
+</div>
+</div>
+</section>
+<section id="전처리" class="level1">
+<h1>전처리</h1>
+<ul>
+<li><p>범주형데이터, 이직여부를 <code>factor</code>형식으로 변환</p></li>
+<li><p>동일 값 가지는 컬럼 삭제 <code>EmployeeCount</code></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">lapply</span>(df, <span class="cf">function</span>(x) <span class="cf">if</span>(<span class="fu">is.character</span>(x)) <span class="fu">as.factor</span>(x) <span class="cf">else</span> x))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>Attrition <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>Attrition)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>remove_single_value_cols <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  single_value_cols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(data, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  data[, <span class="sc">!</span>single_value_cols]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">remove_single_value_cols</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="수치형-변수의-상관관계" class="level1">
+<h1>수치형 변수의 상관관계</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>corrplot 0.92 loaded</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>numeric_df <span class="ot">&lt;-</span> df[, <span class="fu">sapply</span>(df, is.numeric)]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>data_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(numeric_df)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(data_cor, <span class="at">method =</span> <span class="st">"color"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>, <span class="at">tl.cex =</span> <span class="fl">0.55</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"#6D9EC1"</span>, <span class="st">"white"</span>, <span class="st">"#E46726"</span>))(<span class="dv">200</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="ezik_logistic_regression_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="로지스틱-회귀-분석" class="level1">
+<h1>로지스틱 회귀 분석</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(Attrition <span class="sc">~</span> ., <span class="at">data =</span> df, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Attrition ~ ., family = "binomial", data = df)
+
+Coefficients:
+                                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                      -1.140e+01  6.307e+02  -0.018 0.985578    
+Age                              -3.152e-02  1.359e-02  -2.320 0.020363 *  
+BusinessTravelTravel_Frequently   1.909e+00  4.119e-01   4.635 3.57e-06 ***
+BusinessTravelTravel_Rarely       1.027e+00  3.798e-01   2.704 0.006859 ** 
+DailyRate                        -2.843e-04  2.204e-04  -1.290 0.197098    
+DepartmentResearch &amp; Development  1.374e+01  6.307e+02   0.022 0.982626    
+DepartmentSales                   1.360e+01  6.307e+02   0.022 0.982799    
+DistanceFromHome                  4.585e-02  1.079e-02   4.250 2.14e-05 ***
+Education                         1.148e-02  8.800e-02   0.130 0.896204    
+EducationFieldLife Sciences      -7.514e-01  8.068e-01  -0.931 0.351681    
+EducationFieldMarketing          -3.627e-01  8.555e-01  -0.424 0.671600    
+EducationFieldMedical            -8.452e-01  8.063e-01  -1.048 0.294569    
+EducationFieldOther              -7.906e-01  8.663e-01  -0.913 0.361458    
+EducationFieldTechnical Degree    1.736e-01  8.247e-01   0.210 0.833318    
+EmployeeNumber                   -1.540e-04  1.518e-04  -1.015 0.310159    
+EnvironmentSatisfaction          -4.341e-01  8.301e-02  -5.229 1.70e-07 ***
+GenderMale                        3.992e-01  1.847e-01   2.161 0.030676 *  
+HourlyRate                        1.158e-03  4.413e-03   0.262 0.793070    
+JobInvolvement                   -5.269e-01  1.227e-01  -4.294 1.76e-05 ***
+JobLevel                         -9.377e-02  3.164e-01  -0.296 0.766941    
+JobRoleHuman Resources            1.502e+01  6.307e+02   0.024 0.981001    
+JobRoleLaboratory Technician      1.486e+00  4.858e-01   3.059 0.002224 ** 
+JobRoleManager                    3.017e-01  8.904e-01   0.339 0.734739    
+JobRoleManufacturing Director     2.462e-01  5.345e-01   0.461 0.645077    
+JobRoleResearch Director         -1.133e+00  1.007e+00  -1.125 0.260580    
+JobRoleResearch Scientist         5.373e-01  4.972e-01   1.081 0.279882    
+JobRoleSales Executive            1.183e+00  1.126e+00   1.051 0.293191    
+JobRoleSales Representative       2.135e+00  1.180e+00   1.808 0.070534 .  
+JobSatisfaction                  -4.143e-01  8.152e-02  -5.082 3.74e-07 ***
+MaritalStatusMarried              3.371e-01  2.670e-01   1.263 0.206724    
+MaritalStatusSingle               1.174e+00  3.463e-01   3.389 0.000701 ***
+MonthlyIncome                     1.347e-05  8.148e-05   0.165 0.868699    
+MonthlyRate                       5.612e-06  1.253e-05   0.448 0.654285    
+NumCompaniesWorked                1.945e-01  3.884e-02   5.008 5.50e-07 ***
+OverTimeYes                       1.979e+00  1.939e-01  10.209  &lt; 2e-16 ***
+PercentSalaryHike                -2.331e-02  3.935e-02  -0.592 0.553532    
+PerformanceRating                 1.165e-01  3.992e-01   0.292 0.770379    
+RelationshipSatisfaction         -2.654e-01  8.292e-02  -3.201 0.001368 ** 
+StockOptionLevel                 -1.930e-01  1.587e-01  -1.216 0.224040    
+TotalWorkingYears                -5.992e-02  2.934e-02  -2.042 0.041120 *  
+TrainingTimesLastYear            -1.884e-01  7.315e-02  -2.576 0.010002 *  
+WorkLifeBalance                  -3.725e-01  1.242e-01  -2.999 0.002705 ** 
+YearsAtCompany                    9.610e-02  3.891e-02   2.470 0.013509 *  
+YearsInCurrentRole               -1.513e-01  4.553e-02  -3.323 0.000890 ***
+YearsSinceLastPromotion           1.735e-01  4.242e-02   4.090 4.31e-05 ***
+YearsWithCurrManager             -1.367e-01  4.703e-02  -2.907 0.003655 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1298.58  on 1469  degrees of freedom
+Residual deviance:  857.98  on 1424  degrees of freedom
+AIC: 949.98
+
+Number of Fisher Scoring iterations: 15</code></pre>
+</div>
+</div>
+</section>
+<section id="유의하지-않은-변수-삭제" class="level1">
+<h1>유의하지 않은 변수 삭제</h1>
+<ul>
+<li>stepwise function을 사용해서 AIC계수가 작아지도록</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>step_model <span class="ot">&lt;-</span> <span class="fu">step</span>(model, <span class="at">direction =</span> <span class="st">"both"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start:  AIC=949.98
+Attrition ~ Age + BusinessTravel + DailyRate + Department + DistanceFromHome + 
+    Education + EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + HourlyRate + JobInvolvement + JobLevel + JobRole + 
+    JobSatisfaction + MaritalStatus + MonthlyIncome + MonthlyRate + 
+    NumCompaniesWorked + OverTime + PercentSalaryHike + PerformanceRating + 
+    RelationshipSatisfaction + StockOptionLevel + TotalWorkingYears + 
+    TrainingTimesLastYear + WorkLifeBalance + YearsAtCompany + 
+    YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager
+
+                           Df Deviance     AIC
+- Department                2   859.29  947.29
+- Education                 1   857.99  947.99
+- MonthlyIncome             1   858.00  948.00
+- HourlyRate                1   858.05  948.05
+- PerformanceRating         1   858.06  948.06
+- JobLevel                  1   858.06  948.06
+- MonthlyRate               1   858.18  948.18
+- PercentSalaryHike         1   858.33  948.33
+- EmployeeNumber            1   859.01  949.01
+- StockOptionLevel          1   859.48  949.48
+- DailyRate                 1   859.64  949.64
+&lt;none&gt;                          857.98  949.98
+- TotalWorkingYears         1   862.30  952.30
+- EducationField            5   870.43  952.43
+- Gender                    1   862.74  952.74
+- Age                       1   863.53  953.53
+- YearsAtCompany            1   863.96  953.96
+- TrainingTimesLastYear     1   864.80  954.80
+- YearsWithCurrManager      1   866.29  956.29
+- WorkLifeBalance           1   866.99  956.99
+- RelationshipSatisfaction  1   868.32  958.32
+- JobRole                   8   882.95  958.95
+- YearsInCurrentRole        1   869.08  959.08
+- MaritalStatus             2   872.13  960.13
+- YearsSinceLastPromotion   1   875.37  965.37
+- DistanceFromHome          1   875.91  965.91
+- JobInvolvement            1   876.71  966.71
+- NumCompaniesWorked        1   882.68  972.68
+- JobSatisfaction           1   884.68  974.68
+- BusinessTravel            2   887.55  975.55
+- EnvironmentSatisfaction   1   886.35  976.35
+- OverTime                  1   973.94 1063.94
+
+Step:  AIC=947.29
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    Education + EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + HourlyRate + JobInvolvement + JobLevel + JobRole + 
+    JobSatisfaction + MaritalStatus + MonthlyIncome + MonthlyRate + 
+    NumCompaniesWorked + OverTime + PercentSalaryHike + PerformanceRating + 
+    RelationshipSatisfaction + StockOptionLevel + TotalWorkingYears + 
+    TrainingTimesLastYear + WorkLifeBalance + YearsAtCompany + 
+    YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager
+
+                           Df Deviance     AIC
+- Education                 1   859.31  945.31
+- MonthlyIncome             1   859.32  945.32
+- HourlyRate                1   859.36  945.36
+- PerformanceRating         1   859.38  945.38
+- JobLevel                  1   859.39  945.39
+- MonthlyRate               1   859.51  945.51
+- PercentSalaryHike         1   859.64  945.64
+- EmployeeNumber            1   860.33  946.33
+- StockOptionLevel          1   860.95  946.95
+- DailyRate                 1   860.99  946.99
+&lt;none&gt;                          859.29  947.29
+- EducationField            5   871.54  949.54
+- TotalWorkingYears         1   863.72  949.72
+- Gender                    1   863.97  949.97
++ Department                2   857.98  949.98
+- Age                       1   864.88  950.88
+- YearsAtCompany            1   864.96  950.96
+- TrainingTimesLastYear     1   865.93  951.93
+- YearsWithCurrManager      1   867.27  953.27
+- WorkLifeBalance           1   868.36  954.36
+- RelationshipSatisfaction  1   869.55  955.55
+- YearsInCurrentRole        1   870.09  956.09
+- MaritalStatus             2   873.13  957.13
+- YearsSinceLastPromotion   1   877.20  963.20
+- DistanceFromHome          1   877.36  963.36
+- JobRole                   8   892.28  964.28
+- JobInvolvement            1   878.33  964.33
+- NumCompaniesWorked        1   884.36  970.36
+- JobSatisfaction           1   886.33  972.33
+- BusinessTravel            2   888.81  972.81
+- EnvironmentSatisfaction   1   887.57  973.57
+- OverTime                  1   975.62 1061.62
+
+Step:  AIC=945.31
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + HourlyRate + JobInvolvement + JobLevel + JobRole + 
+    JobSatisfaction + MaritalStatus + MonthlyIncome + MonthlyRate + 
+    NumCompaniesWorked + OverTime + PercentSalaryHike + PerformanceRating + 
+    RelationshipSatisfaction + StockOptionLevel + TotalWorkingYears + 
+    TrainingTimesLastYear + WorkLifeBalance + YearsAtCompany + 
+    YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager
+
+                           Df Deviance     AIC
+- MonthlyIncome             1   859.34  943.34
+- HourlyRate                1   859.37  943.37
+- PerformanceRating         1   859.39  943.39
+- JobLevel                  1   859.41  943.41
+- MonthlyRate               1   859.52  943.52
+- PercentSalaryHike         1   859.65  943.65
+- EmployeeNumber            1   860.33  944.33
+- StockOptionLevel          1   860.95  944.95
+- DailyRate                 1   861.01  945.01
+&lt;none&gt;                          859.31  945.31
++ Education                 1   859.29  947.29
+- EducationField            5   871.56  947.56
+- TotalWorkingYears         1   863.73  947.73
+- Gender                    1   863.97  947.97
++ Department                2   857.99  947.99
+- Age                       1   864.91  948.91
+- YearsAtCompany            1   864.96  948.96
+- TrainingTimesLastYear     1   865.94  949.94
+- YearsWithCurrManager      1   867.27  951.27
+- WorkLifeBalance           1   868.39  952.39
+- RelationshipSatisfaction  1   869.55  953.55
+- YearsInCurrentRole        1   870.10  954.10
+- MaritalStatus             2   873.20  955.20
+- YearsSinceLastPromotion   1   877.33  961.33
+- DistanceFromHome          1   877.48  961.48
+- JobInvolvement            1   878.33  962.33
+- JobRole                   8   892.37  962.37
+- NumCompaniesWorked        1   884.52  968.52
+- JobSatisfaction           1   886.36  970.36
+- BusinessTravel            2   888.94  970.94
+- EnvironmentSatisfaction   1   887.66  971.66
+- OverTime                  1   975.66 1059.66
+
+Step:  AIC=943.34
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + HourlyRate + JobInvolvement + JobLevel + JobRole + 
+    JobSatisfaction + MaritalStatus + MonthlyRate + NumCompaniesWorked + 
+    OverTime + PercentSalaryHike + PerformanceRating + RelationshipSatisfaction + 
+    StockOptionLevel + TotalWorkingYears + TrainingTimesLastYear + 
+    WorkLifeBalance + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- HourlyRate                1   859.41  941.41
+- JobLevel                  1   859.41  941.41
+- PerformanceRating         1   859.41  941.41
+- MonthlyRate               1   859.54  941.54
+- PercentSalaryHike         1   859.68  941.68
+- EmployeeNumber            1   860.35  942.35
+- StockOptionLevel          1   860.99  942.99
+- DailyRate                 1   861.04  943.04
+&lt;none&gt;                          859.34  943.34
++ MonthlyIncome             1   859.31  945.31
++ Education                 1   859.32  945.32
+- EducationField            5   871.64  945.64
+- TotalWorkingYears         1   863.74  945.74
++ Department                2   858.02  946.02
+- Gender                    1   864.02  946.02
+- Age                       1   864.95  946.95
+- YearsAtCompany            1   865.00  947.00
+- TrainingTimesLastYear     1   866.00  948.00
+- YearsWithCurrManager      1   867.42  949.42
+- WorkLifeBalance           1   868.41  950.41
+- RelationshipSatisfaction  1   869.58  951.58
+- YearsInCurrentRole        1   870.10  952.10
+- MaritalStatus             2   873.21  953.21
+- DistanceFromHome          1   877.48  959.48
+- YearsSinceLastPromotion   1   877.51  959.51
+- JobInvolvement            1   878.37  960.37
+- JobRole                   8   893.17  961.17
+- NumCompaniesWorked        1   884.68  966.68
+- JobSatisfaction           1   886.43  968.43
+- BusinessTravel            2   888.97  968.97
+- EnvironmentSatisfaction   1   887.69  969.69
+- OverTime                  1   975.89 1057.89
+
+Step:  AIC=941.41
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + JobInvolvement + JobLevel + JobRole + JobSatisfaction + 
+    MaritalStatus + MonthlyRate + NumCompaniesWorked + OverTime + 
+    PercentSalaryHike + PerformanceRating + RelationshipSatisfaction + 
+    StockOptionLevel + TotalWorkingYears + TrainingTimesLastYear + 
+    WorkLifeBalance + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- PerformanceRating         1   859.48  939.48
+- JobLevel                  1   859.48  939.48
+- MonthlyRate               1   859.61  939.61
+- PercentSalaryHike         1   859.75  939.75
+- EmployeeNumber            1   860.41  940.41
+- StockOptionLevel          1   861.06  941.06
+- DailyRate                 1   861.08  941.08
+&lt;none&gt;                          859.41  941.41
++ HourlyRate                1   859.34  943.34
++ MonthlyIncome             1   859.37  943.37
++ Education                 1   859.39  943.39
+- EducationField            5   871.73  943.73
+- TotalWorkingYears         1   863.82  943.82
+- Gender                    1   864.05  944.05
++ Department                2   858.09  944.09
+- Age                       1   864.97  944.97
+- YearsAtCompany            1   865.14  945.14
+- TrainingTimesLastYear     1   866.06  946.06
+- YearsWithCurrManager      1   867.52  947.52
+- WorkLifeBalance           1   868.49  948.49
+- RelationshipSatisfaction  1   869.67  949.67
+- YearsInCurrentRole        1   870.19  950.19
+- MaritalStatus             2   873.26  951.26
+- YearsSinceLastPromotion   1   877.51  957.51
+- DistanceFromHome          1   877.57  957.57
+- JobInvolvement            1   878.37  958.37
+- JobRole                   8   893.17  959.17
+- NumCompaniesWorked        1   884.72  964.72
+- JobSatisfaction           1   886.85  966.85
+- BusinessTravel            2   888.97  966.97
+- EnvironmentSatisfaction   1   887.80  967.80
+- OverTime                  1   975.91 1055.91
+
+Step:  AIC=939.48
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + JobInvolvement + JobLevel + JobRole + JobSatisfaction + 
+    MaritalStatus + MonthlyRate + NumCompaniesWorked + OverTime + 
+    PercentSalaryHike + RelationshipSatisfaction + StockOptionLevel + 
+    TotalWorkingYears + TrainingTimesLastYear + WorkLifeBalance + 
+    YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- JobLevel                  1   859.57  937.57
+- MonthlyRate               1   859.67  937.67
+- PercentSalaryHike         1   859.83  937.83
+- EmployeeNumber            1   860.50  938.50
+- DailyRate                 1   861.14  939.14
+- StockOptionLevel          1   861.16  939.16
+&lt;none&gt;                          859.48  939.48
++ PerformanceRating         1   859.41  941.41
++ HourlyRate                1   859.41  941.41
++ MonthlyIncome             1   859.46  941.46
++ Education                 1   859.47  941.47
+- EducationField            5   871.82  941.82
+- TotalWorkingYears         1   863.85  941.85
+- Gender                    1   864.10  942.10
++ Department                2   858.17  942.17
+- Age                       1   865.10  943.10
+- YearsAtCompany            1   865.20  943.20
+- TrainingTimesLastYear     1   866.15  944.15
+- YearsWithCurrManager      1   867.60  945.60
+- WorkLifeBalance           1   868.56  946.56
+- RelationshipSatisfaction  1   869.79  947.79
+- YearsInCurrentRole        1   870.22  948.22
+- MaritalStatus             2   873.31  949.31
+- DistanceFromHome          1   877.58  955.58
+- YearsSinceLastPromotion   1   877.63  955.63
+- JobInvolvement            1   878.45  956.45
+- JobRole                   8   893.28  957.28
+- NumCompaniesWorked        1   884.73  962.73
+- JobSatisfaction           1   886.95  964.95
+- BusinessTravel            2   889.27  965.27
+- EnvironmentSatisfaction   1   887.85  965.85
+- OverTime                  1   976.66 1054.66
+
+Step:  AIC=937.57
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + JobInvolvement + JobRole + JobSatisfaction + MaritalStatus + 
+    MonthlyRate + NumCompaniesWorked + OverTime + PercentSalaryHike + 
+    RelationshipSatisfaction + StockOptionLevel + TotalWorkingYears + 
+    TrainingTimesLastYear + WorkLifeBalance + YearsAtCompany + 
+    YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager
+
+                           Df Deviance     AIC
+- MonthlyRate               1   859.75  935.75
+- PercentSalaryHike         1   859.90  935.90
+- EmployeeNumber            1   860.58  936.58
+- DailyRate                 1   861.23  937.23
+- StockOptionLevel          1   861.28  937.28
+&lt;none&gt;                          859.57  937.57
++ JobLevel                  1   859.48  939.48
++ PerformanceRating         1   859.48  939.48
++ HourlyRate                1   859.50  939.50
++ Education                 1   859.55  939.55
++ MonthlyIncome             1   859.56  939.56
+- EducationField            5   871.85  939.85
+- Gender                    1   864.15  940.15
++ Department                2   858.24  940.24
+- Age                       1   865.16  941.16
+- YearsAtCompany            1   865.21  941.21
+- TotalWorkingYears         1   865.64  941.64
+- TrainingTimesLastYear     1   866.22  942.22
+- YearsWithCurrManager      1   867.61  943.61
+- WorkLifeBalance           1   868.69  944.69
+- RelationshipSatisfaction  1   869.85  945.85
+- YearsInCurrentRole        1   870.22  946.22
+- MaritalStatus             2   873.32  947.32
+- DistanceFromHome          1   877.58  953.58
+- YearsSinceLastPromotion   1   877.69  953.69
+- JobInvolvement            1   878.52  954.52
+- NumCompaniesWorked        1   884.90  960.90
+- JobRole                   8   899.95  961.95
+- JobSatisfaction           1   887.05  963.05
+- BusinessTravel            2   889.33  963.33
+- EnvironmentSatisfaction   1   888.00  964.00
+- OverTime                  1   976.84 1052.84
+
+Step:  AIC=935.75
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + JobInvolvement + JobRole + JobSatisfaction + MaritalStatus + 
+    NumCompaniesWorked + OverTime + PercentSalaryHike + RelationshipSatisfaction + 
+    StockOptionLevel + TotalWorkingYears + TrainingTimesLastYear + 
+    WorkLifeBalance + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- PercentSalaryHike         1   860.09  934.09
+- EmployeeNumber            1   860.72  934.72
+- DailyRate                 1   861.43  935.43
+- StockOptionLevel          1   861.57  935.57
+&lt;none&gt;                          859.75  935.75
++ MonthlyRate               1   859.57  937.57
++ JobLevel                  1   859.67  937.67
++ HourlyRate                1   859.67  937.67
++ PerformanceRating         1   859.68  937.68
++ Education                 1   859.73  937.73
++ MonthlyIncome             1   859.74  937.74
+- EducationField            5   871.95  937.95
+- Gender                    1   864.27  938.27
++ Department                2   858.40  938.40
+- YearsAtCompany            1   865.33  939.33
+- Age                       1   865.35  939.35
+- TotalWorkingYears         1   865.80  939.80
+- TrainingTimesLastYear     1   866.42  940.42
+- YearsWithCurrManager      1   867.84  941.84
+- WorkLifeBalance           1   868.82  942.82
+- RelationshipSatisfaction  1   870.02  944.02
+- YearsInCurrentRole        1   870.38  944.38
+- MaritalStatus             2   873.40  945.40
+- DistanceFromHome          1   878.02  952.02
+- YearsSinceLastPromotion   1   878.03  952.03
+- JobInvolvement            1   878.68  952.68
+- NumCompaniesWorked        1   885.05  959.05
+- JobRole                   8   899.97  959.97
+- JobSatisfaction           1   887.21  961.21
+- BusinessTravel            2   889.71  961.71
+- EnvironmentSatisfaction   1   888.03  962.03
+- OverTime                  1   977.23 1051.23
+
+Step:  AIC=934.09
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EmployeeNumber + EnvironmentSatisfaction + 
+    Gender + JobInvolvement + JobRole + JobSatisfaction + MaritalStatus + 
+    NumCompaniesWorked + OverTime + RelationshipSatisfaction + 
+    StockOptionLevel + TotalWorkingYears + TrainingTimesLastYear + 
+    WorkLifeBalance + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- EmployeeNumber            1   860.98  932.98
+- DailyRate                 1   861.84  933.84
+- StockOptionLevel          1   861.95  933.95
+&lt;none&gt;                          860.09  934.09
++ PercentSalaryHike         1   859.75  935.75
++ MonthlyRate               1   859.90  935.90
++ PerformanceRating         1   860.01  936.01
++ HourlyRate                1   860.02  936.02
++ JobLevel                  1   860.03  936.03
++ Education                 1   860.09  936.09
++ MonthlyIncome             1   860.09  936.09
+- EducationField            5   872.43  936.43
+- Gender                    1   864.60  936.60
++ Department                2   858.75  936.75
+- YearsAtCompany            1   865.75  937.75
+- Age                       1   865.88  937.88
+- TotalWorkingYears         1   866.17  938.17
+- TrainingTimesLastYear     1   866.72  938.72
+- YearsWithCurrManager      1   868.23  940.23
+- WorkLifeBalance           1   869.06  941.06
+- RelationshipSatisfaction  1   870.25  942.25
+- YearsInCurrentRole        1   870.77  942.77
+- MaritalStatus             2   873.69  943.69
+- DistanceFromHome          1   878.25  950.25
+- YearsSinceLastPromotion   1   878.46  950.46
+- JobInvolvement            1   878.96  950.96
+- NumCompaniesWorked        1   885.65  957.65
+- JobRole                   8   900.12  958.12
+- JobSatisfaction           1   887.37  959.37
+- EnvironmentSatisfaction   1   888.27  960.27
+- BusinessTravel            2   890.43  960.43
+- OverTime                  1   977.35 1049.35
+
+Step:  AIC=932.98
+Attrition ~ Age + BusinessTravel + DailyRate + DistanceFromHome + 
+    EducationField + EnvironmentSatisfaction + Gender + JobInvolvement + 
+    JobRole + JobSatisfaction + MaritalStatus + NumCompaniesWorked + 
+    OverTime + RelationshipSatisfaction + StockOptionLevel + 
+    TotalWorkingYears + TrainingTimesLastYear + WorkLifeBalance + 
+    YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager
+
+                           Df Deviance     AIC
+- DailyRate                 1   862.67  932.67
+&lt;none&gt;                          860.98  932.98
+- StockOptionLevel          1   863.06  933.06
++ EmployeeNumber            1   860.09  934.09
++ PercentSalaryHike         1   860.72  934.72
++ MonthlyRate               1   860.83  934.83
++ HourlyRate                1   860.91  934.91
++ JobLevel                  1   860.92  934.92
++ PerformanceRating         1   860.93  934.93
++ MonthlyIncome             1   860.97  934.97
++ Education                 1   860.98  934.98
+- Gender                    1   865.47  935.47
+- EducationField            5   873.49  935.49
++ Department                2   859.63  935.63
+- YearsAtCompany            1   866.38  936.38
+- Age                       1   866.60  936.60
+- TotalWorkingYears         1   867.17  937.17
+- TrainingTimesLastYear     1   867.72  937.72
+- YearsWithCurrManager      1   868.90  938.90
+- WorkLifeBalance           1   869.89  939.89
+- RelationshipSatisfaction  1   870.64  940.64
+- YearsInCurrentRole        1   871.31  941.31
+- MaritalStatus             2   874.22  942.22
+- DistanceFromHome          1   878.75  948.75
+- YearsSinceLastPromotion   1   879.29  949.29
+- JobInvolvement            1   879.84  949.84
+- NumCompaniesWorked        1   886.75  956.75
+- JobRole                   8   900.80  956.80
+- JobSatisfaction           1   887.91  957.91
+- BusinessTravel            2   891.23  959.23
+- EnvironmentSatisfaction   1   889.44  959.44
+- OverTime                  1   978.65 1048.65
+
+Step:  AIC=932.67
+Attrition ~ Age + BusinessTravel + DistanceFromHome + EducationField + 
+    EnvironmentSatisfaction + Gender + JobInvolvement + JobRole + 
+    JobSatisfaction + MaritalStatus + NumCompaniesWorked + OverTime + 
+    RelationshipSatisfaction + StockOptionLevel + TotalWorkingYears + 
+    TrainingTimesLastYear + WorkLifeBalance + YearsAtCompany + 
+    YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager
+
+                           Df Deviance     AIC
+&lt;none&gt;                          862.67  932.67
+- StockOptionLevel          1   864.73  932.73
++ DailyRate                 1   860.98  932.98
++ EmployeeNumber            1   861.84  933.84
++ PercentSalaryHike         1   862.36  934.36
++ MonthlyRate               1   862.50  934.50
++ PerformanceRating         1   862.60  934.60
++ JobLevel                  1   862.61  934.61
++ HourlyRate                1   862.63  934.63
++ MonthlyIncome             1   862.66  934.66
++ Education                 1   862.67  934.67
+- Gender                    1   867.07  935.07
++ Department                2   861.30  935.30
+- EducationField            5   875.43  935.43
+- YearsAtCompany            1   868.13  936.13
+- Age                       1   868.50  936.50
+- TotalWorkingYears         1   869.02  937.02
+- TrainingTimesLastYear     1   869.56  937.56
+- YearsWithCurrManager      1   870.44  938.44
+- WorkLifeBalance           1   871.33  939.33
+- RelationshipSatisfaction  1   872.35  940.35
+- YearsInCurrentRole        1   873.60  941.60
+- MaritalStatus             2   876.48  942.48
+- DistanceFromHome          1   880.79  948.79
+- YearsSinceLastPromotion   1   882.11  950.11
+- JobInvolvement            1   882.14  950.14
+- JobRole                   8   901.82  955.82
+- NumCompaniesWorked        1   888.12  956.12
+- JobSatisfaction           1   890.43  958.43
+- EnvironmentSatisfaction   1   891.10  959.10
+- BusinessTravel            2   893.41  959.41
+- OverTime                  1   979.35 1047.35</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(step_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Attrition ~ Age + BusinessTravel + DistanceFromHome + 
+    EducationField + EnvironmentSatisfaction + Gender + JobInvolvement + 
+    JobRole + JobSatisfaction + MaritalStatus + NumCompaniesWorked + 
+    OverTime + RelationshipSatisfaction + StockOptionLevel + 
+    TotalWorkingYears + TrainingTimesLastYear + WorkLifeBalance + 
+    YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + 
+    YearsWithCurrManager, family = "binomial", data = df)
+
+Coefficients:
+                                Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                      1.98043    1.16964   1.693 0.090417 .  
+Age                             -0.03179    0.01338  -2.375 0.017530 *  
+BusinessTravelTravel_Frequently  1.93692    0.40881   4.738 2.16e-06 ***
+BusinessTravelTravel_Rarely      1.04981    0.37711   2.784 0.005372 ** 
+DistanceFromHome                 0.04555    0.01066   4.272 1.94e-05 ***
+EducationFieldLife Sciences     -0.62920    0.75357  -0.835 0.403740    
+EducationFieldMarketing         -0.20106    0.80299  -0.250 0.802286    
+EducationFieldMedical           -0.73817    0.75281  -0.981 0.326811    
+EducationFieldOther             -0.73661    0.82019  -0.898 0.369133    
+EducationFieldTechnical Degree   0.27581    0.77488   0.356 0.721890    
+EnvironmentSatisfaction         -0.43171    0.08247  -5.235 1.65e-07 ***
+GenderMale                       0.38159    0.18358   2.079 0.037652 *  
+JobInvolvement                  -0.53379    0.12193  -4.378 1.20e-05 ***
+JobRoleHuman Resources           1.34689    0.65474   2.057 0.039674 *  
+JobRoleLaboratory Technician     1.53300    0.43622   3.514 0.000441 ***
+JobRoleManager                   0.15499    0.65805   0.236 0.813797    
+JobRoleManufacturing Director    0.24735    0.52967   0.467 0.640508    
+JobRoleResearch Director        -1.02684    0.91785  -1.119 0.263252    
+JobRoleResearch Scientist        0.59389    0.44263   1.342 0.179683    
+JobRoleSales Executive           1.02519    0.44560   2.301 0.021409 *  
+JobRoleSales Representative      1.98169    0.50741   3.906 9.40e-05 ***
+JobSatisfaction                 -0.41924    0.08095  -5.179 2.23e-07 ***
+MaritalStatusMarried             0.31564    0.26542   1.189 0.234358    
+MaritalStatusSingle              1.13598    0.34264   3.315 0.000915 ***
+NumCompaniesWorked               0.19586    0.03848   5.090 3.59e-07 ***
+OverTimeYes                      1.97441    0.19258  10.252  &lt; 2e-16 ***
+RelationshipSatisfaction        -0.25420    0.08207  -3.097 0.001953 ** 
+StockOptionLevel                -0.22125    0.15601  -1.418 0.156141    
+TotalWorkingYears               -0.06468    0.02642  -2.449 0.014341 *  
+TrainingTimesLastYear           -0.18885    0.07293  -2.589 0.009616 ** 
+WorkLifeBalance                 -0.36314    0.12346  -2.941 0.003268 ** 
+YearsAtCompany                   0.08958    0.03804   2.355 0.018537 *  
+YearsInCurrentRole              -0.14762    0.04475  -3.299 0.000970 ***
+YearsSinceLastPromotion          0.18064    0.04169   4.333 1.47e-05 ***
+YearsWithCurrManager            -0.13167    0.04690  -2.807 0.004997 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1298.58  on 1469  degrees of freedom
+Residual deviance:  862.67  on 1435  degrees of freedom
+AIC: 932.67
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variable =</span> <span class="fu">names</span>(step_model<span class="sc">$</span>coefficients),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coefficient =</span> step_model<span class="sc">$</span>coefficients,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">NULL</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Coefficient_Abs =</span> <span class="fu">abs</span>(Coefficient)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Coefficient_Abs))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>coef_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          Variable Coefficient Coefficient_Abs
+1      JobRoleSales Representative  1.98169359      1.98169359
+2                      (Intercept)  1.98042979      1.98042979
+3                      OverTimeYes  1.97440823      1.97440823
+4  BusinessTravelTravel_Frequently  1.93692185      1.93692185
+5     JobRoleLaboratory Technician  1.53299941      1.53299941
+6           JobRoleHuman Resources  1.34688603      1.34688603
+7              MaritalStatusSingle  1.13598233      1.13598233
+8      BusinessTravelTravel_Rarely  1.04981435      1.04981435
+9         JobRoleResearch Director -1.02683750      1.02683750
+10          JobRoleSales Executive  1.02518633      1.02518633
+11           EducationFieldMedical -0.73817185      0.73817185
+12             EducationFieldOther -0.73661416      0.73661416
+13     EducationFieldLife Sciences -0.62919990      0.62919990
+14       JobRoleResearch Scientist  0.59388778      0.59388778
+15                  JobInvolvement -0.53379063      0.53379063
+16         EnvironmentSatisfaction -0.43171012      0.43171012
+17                 JobSatisfaction -0.41924487      0.41924487
+18                      GenderMale  0.38159142      0.38159142
+19                 WorkLifeBalance -0.36314327      0.36314327
+20            MaritalStatusMarried  0.31564273      0.31564273
+21  EducationFieldTechnical Degree  0.27580705      0.27580705
+22        RelationshipSatisfaction -0.25420267      0.25420267
+23   JobRoleManufacturing Director  0.24734831      0.24734831
+24                StockOptionLevel -0.22124557      0.22124557
+25         EducationFieldMarketing -0.20106059      0.20106059
+26              NumCompaniesWorked  0.19585750      0.19585750
+27           TrainingTimesLastYear -0.18885299      0.18885299
+28         YearsSinceLastPromotion  0.18064029      0.18064029
+29                  JobRoleManager  0.15499113      0.15499113
+30              YearsInCurrentRole -0.14762014      0.14762014
+31            YearsWithCurrManager -0.13166916      0.13166916
+32                  YearsAtCompany  0.08958423      0.08958423
+33               TotalWorkingYears -0.06468128      0.06468128
+34                DistanceFromHome  0.04555264      0.04555264
+35                             Age -0.03179028      0.03179028</code></pre>
+</div>
+</div>
+</section>
+<section id="해석" class="level1">
+<h1>해석</h1>
+<p>통계적으로 가장 유의미한 변수들 (p &lt; 0.001):</p>
+<ul>
+<li>OverTimeYes: 초과 근무를 하는 직원은 이직할 확률이 매우 높아진다.</li>
+<li>NumCompaniesWorked: 이전에 일한 회사의 수가 많을수록 이직 가능성이 높아진다.</li>
+<li>JobSatisfaction: 직무 만족도가 높을수록 이직 가능성이 낮아진다.</li>
+<li>EnvironmentSatisfaction: 근무 환경 만족도가 높을수록 이직 가능성이 낮아진다.</li>
+<li>BusinessTravelTravel_Frequently: 잦은 출장이 있는 직원은 이직 가능성이 높아진다.</li>
+<li>YearsInCurrentRole: 현재 역할에서의 근속 연수가 길수록 이직 가능성이 낮아진다.</li>
+<li>YearsSinceLastPromotion: 마지막 승진 이후 시간이 오래될수록 이직 가능성이 높아진다.</li>
+</ul>
+<p>다른 중요한 요인들:</p>
+<ul>
+<li>DistanceFromHome: 집에서 직장까지의 거리가 멀수록 이직 가능성이 높아진다.</li>
+<li>JobInvolvement: 직무 참여도가 높을수록 이직 가능성이 낮아진다.</li>
+<li>MaritalStatusSingle: 미혼자가 기혼자나 이혼/사별자보다 이직 가능성이 높다.</li>
+<li>WorkLifeBalance: 일-생활 균형이 좋을수록 이직 가능성이 낮아진다.</li>
+</ul>
+<p>직무 관련 요인:</p>
+<ul>
+<li>특정 직무(예: Sales Representative, Laboratory Technician, Human Resources)는 다른 직무에 비해 이직 가능성이 높다. <br>반면, Research Director 직무는 이직 가능성이 낮은 편입니다.</li>
+</ul>
+<p>기타 관찰:</p>
+<ul>
+<li>GenderMale: 남성이 여성보다 이직 가능성이 약간 높습니다.</li>
+<li>TrainingTimesLastYear: 지난 해 교육을 많이 받을수록 이직 가능성이 낮아집니다.</li>
+<li>YearsAtCompany: 회사 근속 연수가 길수록 이직 가능성이 약간 높아지는데, 이는 YearsInCurrentRole과 함께 고려해야 합니다.</li>
+</ul>
+<section id="더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다." class="level2">
+<h2 class="anchored" data-anchor-id="더-정확한-결과를-위해-이상치-제거다중공선성-제거등의-방법이-필요하다.">더 정확한 결과를 위해 <code>이상치 제거</code>,<code>다중공선성 제거</code>등의 방법이 필요하다.</h2>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
