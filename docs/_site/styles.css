@@ -1,0 +1,169 @@
+/* css styles */
+
+body{
+  background: #000000;
+  overflow-x: hidden;
+
+}
+.navbar{
+  background: #210000;
+}
+
+#quarto-header>nav {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 16vw;
+  padding-right: 19vw;
+}
+
+.title_img{
+  width: 350px; /* 원하는 너비로 설정 */
+  height: auto;
+}
+
+.menu-text{
+  color: white;
+  transition: color 0.3s linear;
+  font-size: 30px;
+  font-style: Bold;
+}
+
+.menu-text:hover{
+  color: red;
+}
+
+@media (min-width: 992px) {
+  body .page-columns {
+    display: grid;
+    gap: 0;
+    grid-template-columns: 
+      [screen-start] 
+      1fr 
+      [page-start page-start-inset body-start-outset body-start body-content-start] 
+      minmax(500px, 1200px)  /* 콘텐츠 영역의 최대 너비를 1200px로 확장 */
+      [body-content-end body-end body-end-outset page-end-inset page-end] 
+      1fr 
+      [screen-end];
+  }
+}
+
+.content {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+.card {
+  border-radius: 10px;
+  overflow: hidden; /* 이미지가 카드 밖으로 넘치지 않도록 */    
+  transform: translateY(20px);
+  animation: fadeInUp 1s forwards;  
+  animation-delay: var(--delay, 0s);
+  background: pink;
+}
+
+.card-img-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+h1.title {
+  display: none !important;
+  padding: 0px;
+}
+
+header#title-block-header{
+  display: none !important;
+}
+
+#quarto-content>* {
+    padding-top: 0;
+}
+
+
+.rowbar{
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  background-image: url("https://cdn.imweb.me/thumbnail/20240423/0c45371679ced.png");
+  height: 650px; /* 높이를 필요에 따라 조정하세요 */
+  margin: 0 auto;
+  padding-top: 50px;
+  padding-left: 30vw;
+  padding-right: 30vw;
+}
+
+.div-text{
+  color: white;
+  
+}
+
+
+.img-center{
+  text-align: center;
+  margin-bottom: 20px ;
+  margin-top: 20px;
+}
+
+.content{
+  padding-top: 0px;
+}
+
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.button-a {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+
+.gongsik-a {
+  display: inline-block;
+  background-color: #a50034;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.gongsik-a:hover {
+  background-color: #7a0027;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.gongsik-a:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
