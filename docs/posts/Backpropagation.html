@@ -192,7 +192,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><img src="data/backpropagation.png" class="img-fluid"></p>
+<p><img src="data/backpropagation.png" style="display:block; margin:auto;"></p>
 <section id="backpropagation-역전파" class="level1">
 <h1>Backpropagation (역전파)</h1>
 <p><strong>Backpropagation</strong>은 <strong>Artificial Neural Network</strong>를 학습시키기 위한 일반적인 알고리즘 중 하나이다. 한국말로 직역하면 <strong>역전파</strong>라는 뜻인데,<br> target값과 실제 모델이 계산한 output이 얼마나 차이가 나는지 구한 후,<br> 그 오차값을 다시 뒤로 전파해가면서 각 뉴런이 가지고 있는 변수들을 갱신하는 알고리즘이다.</p>
@@ -236,7 +236,7 @@ b_1 = b_1 - \text{learning\_rate} \times \frac{\partial L}{\partial b_1}
 </section>
 <section id="visualization" class="level4">
 <h4 class="anchored" data-anchor-id="visualization">Visualization</h4>
-<p><img src="Backpropagation_files/figure-html/029cee93-1-image.png" class="img-fluid"></p>
+<p><img src="Backpropagation_files/figure-html/734be8bb-1-image.png" class="img-fluid"></p>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -351,7 +351,7 @@ true : [0], pred : [0.51276794]</code></pre>
 <p>1-레이어, 3-퍼셉트론</p>
 <section id="visualization-1" class="level4">
 <h4 class="anchored" data-anchor-id="visualization-1">Visualization</h4>
-<p><img src="Backpropagation_files/figure-html/b617c6af-1-image.png" class="img-fluid"></p>
+<p><img src="Backpropagation_files/figure-html/35b61d73-1-image.png" class="img-fluid"></p>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>input_size <span class="op">=</span> <span class="dv">2</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>hidden_size <span class="op">=</span> <span class="dv">3</span></span>
