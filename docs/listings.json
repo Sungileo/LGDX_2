@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/text_network.html",
       "/posts/Backpropagation.html",
       "/posts/Day1_실습.html",
       "/posts/텍스트마이닝_sample.html",
