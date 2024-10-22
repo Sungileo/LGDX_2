@@ -3,8 +3,8 @@
     "listing": "/index.html",
     "items": [
       "/posts/text_network.html",
+      "/posts/OpenCV_번호판.html",
       "/posts/Backpropagation.html",
-      "/posts/Day1_실습.html",
       "/posts/텍스트마이닝_sample.html",
       "/posts/ezik_logistic_regression.html",
       "/posts/보험데이터.html"
